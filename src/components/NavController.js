@@ -1,23 +1,17 @@
 import React from 'react';
-import {Text, View} from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-import {useIsLoggedIn, useLogIn, useLogOut} from '../context/AuthContext';
+import {View} from 'react-native';
+import {useIsLoggedIn} from '../context/AuthContext';
+import AuthNavigation from '../navigation/AuthNavigation';
+import MainNavigation from '../navigation/MainNavigation';
 
 const NavController = () => {
   const isLoggedIn = useIsLoggedIn();
-  const logIn = useLogIn();
-  const logOut = useLogOut();
-
   return (
-    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+    <View style={{flex: 1}}>
       {isLoggedIn ? (
-        <TouchableOpacity onPress={logOut}>
-          <Text>LOG OUT</Text>
-        </TouchableOpacity>
+        <MainNavigation />
       ) : (
-        <TouchableOpacity onPress={logIn}>
-          <Text>LOG IN</Text>
-        </TouchableOpacity>
+        <AuthNavigation />
       )}
     </View>
   );
