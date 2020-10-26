@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import styled from 'styled-components';
 import {TouchableWithoutFeedback, Keyboard, Alert} from 'react-native';
 import {useMutation} from '@apollo/client';
+import * as Facebook from 'expo-facebook';
 import AuthButton from '../../components/AuthButton';
 import AuthInput from '../../components/AuthInput';
 import useInput from '../../hooks/useInput';
@@ -12,6 +13,14 @@ const View = styled.View`
   justify-content: center;
   align-items: center;
   flex: 1;
+`;
+
+const FBContainer = styled.View`
+  margin-top: 25px;
+  padding-top: 25px;
+  border-top-width: 1px;
+  border-color: ${(props) => props.theme.lightGreyColor};
+  border-style: solid;
 `;
 
 const SignUp = ({route, navigation}) => {
@@ -43,12 +52,14 @@ const SignUp = ({route, navigation}) => {
 
     try {
       setLoading(true);
-      const {data} = await createAccount({variables: {
-        username,
-        email,
-        firstname: fName,
-        lastname: lName,
-      }});
+      const {data} = await createAccount({
+        variables: {
+          username,
+          email,
+          firstname: fName,
+          lastname: lName,
+        },
+      });
       if (data.createAccount) {
         Alert.alert('Account created', 'Log in now!');
         navigation.navigate('SignIn', {email});
@@ -59,6 +70,36 @@ const SignUp = ({route, navigation}) => {
       navigation.navigate('SignIn', {email});
     } finally {
       setLoading(false);
+    }
+  };
+
+  const updateFormData = (email, firstName, lastName) => {
+    emailInput.setValue(email);
+    fNameInput.setValue(firstName);
+    lNameInput.setValue(lastName);
+    const [username] = email.split("@");
+    usernameInput.setValue(username);
+  };
+
+  const fbLogin = async () => {
+    try {
+      setLoading(true);
+      await Facebook.initializeAsync({appId: '978761129270156'});
+      const {type, token} = await Facebook.logInWithReadPermissionsAsync({
+        permissions: ['public_profile', 'email'],
+      });
+      if (type === 'success') {
+        const response = await fetch(
+          `https://graph.facebook.com/me?access_token=${token}&fields=id,last_name,first_name,email`,
+        );
+        const {email, first_name, last_name} = await response.json();
+        updateFormData(email, first_name, last_name);
+        setLoading(false);
+      } else {
+        // type === 'cancel'
+      }
+    } catch ({message}) {
+      alert(`Facebook Login Error: ${message}`);
     }
   };
 
@@ -81,6 +122,14 @@ const SignUp = ({route, navigation}) => {
           autoCorrect={false}
         />
         <AuthButton loading={loading} onPress={handleSignup} text="Sign up" />
+        <FBContainer>
+          <AuthButton
+            bgColor="#2D4DA7"
+            loading={false}
+            onPress={fbLogin}
+            text="Connect with Facebook"
+          />
+        </FBContainer>
       </View>
     </TouchableWithoutFeedback>
   );
