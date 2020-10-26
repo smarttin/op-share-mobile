@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import {TouchableWithoutFeedback, Keyboard, Alert} from 'react-native';
 import {useMutation} from '@apollo/client';
 import * as Facebook from 'expo-facebook';
+import * as Google from 'expo-google-app-auth';
 import AuthButton from '../../components/AuthButton';
 import AuthInput from '../../components/AuthInput';
 import useInput from '../../hooks/useInput';
@@ -21,6 +22,10 @@ const FBContainer = styled.View`
   border-top-width: 1px;
   border-color: ${(props) => props.theme.lightGreyColor};
   border-style: solid;
+`;
+
+const GoogleContainer = styled.View`
+  margin-top: 20px;
 `;
 
 const SignUp = ({route, navigation}) => {
@@ -77,7 +82,7 @@ const SignUp = ({route, navigation}) => {
     emailInput.setValue(email);
     fNameInput.setValue(firstName);
     lNameInput.setValue(lastName);
-    const [username] = email.split("@");
+    const [username] = email.split('@');
     usernameInput.setValue(username);
   };
 
@@ -100,6 +105,31 @@ const SignUp = ({route, navigation}) => {
       }
     } catch ({message}) {
       alert(`Facebook Login Error: ${message}`);
+    }
+  };
+
+  const googleLogin = async () => {
+    try {
+      setLoading(true);
+      const result = await Google.logInAsync({
+        androidClientId: '828919713459-bqdg5hr105e99oko40g5lbpeldrc60q1.apps.googleusercontent.com',
+        iosClientId: '828919713459-bppegleji5mtjmku43e64riho8h4a9kd.apps.googleusercontent.com',
+        scopes: ['profile', 'email'],
+      });
+
+      if (result.type === 'success') {
+        const user = await fetch('https://www.googleapis.com/userinfo/v2/me', {
+          headers: {Authorization: `Bearer ${result.accessToken}`},
+        });
+        const {email, family_name, given_name} = await user.json();
+        updateFormData(email, given_name, family_name);
+      } else {
+        return {cancelled: true};
+      }
+    } catch (e) {
+      return {error: true};
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -130,6 +160,14 @@ const SignUp = ({route, navigation}) => {
             text="Connect with Facebook"
           />
         </FBContainer>
+        <GoogleContainer>
+          <AuthButton
+            bgColor="#EE1922"
+            loading={false}
+            onPress={googleLogin}
+            text="Connect with Google"
+          />
+        </GoogleContainer>
       </View>
     </TouchableWithoutFeedback>
   );
