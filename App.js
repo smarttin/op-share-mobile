@@ -8,7 +8,7 @@ import {persistCache} from 'apollo3-cache-persist';
 import AsyncStorage from '@react-native-community/async-storage';
 import {ThemeProvider} from 'styled-components';
 import apolloClientOptions from './apollo';
-import styles from './styles';
+import styles from './src/styles';
 import NavController from './src/components/NavController';
 import {AuthProvider} from './src/context/AuthContext';
 
@@ -18,7 +18,7 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(null);
 
   const preLoad = async () => {
-    await AsyncStorage.clear();
+    // await AsyncStorage.clear();
     try {
       await Font.loadAsync({...Ionicons.font});
       await Asset.loadAsync([require('./assets/logo.png')]);
