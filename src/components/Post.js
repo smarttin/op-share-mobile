@@ -1,14 +1,21 @@
-import React from 'react';
-import {Image, Platform} from 'react-native';
-import styled from 'styled-components';
-import {Ionicons} from '@expo/vector-icons';
+import React, { useState } from 'react';
+import { Image, Platform } from 'react-native';
+import styled from 'styled-components/native';
+import { Ionicons } from '@expo/vector-icons';
 import PropTypes from 'prop-types';
 import Swiper from 'react-native-swiper';
+import { gql, useMutation } from '@apollo/client';
 import constants from '../constants';
 import styles from '../styles';
 
+export const TOGGLE_LIKE = gql`
+  mutation toggelLike($postId: String!) {
+    toggleLike(postId: $postId)
+  }
+`;
+
 const Container = styled.View`
-  margin-bottom: 40px;
+  /* margin-bottom: 40px; */
 `;
 const Header = styled.View`
   padding: 8px;
@@ -47,12 +54,48 @@ const CommentCount = styled.Text`
   font-size: 13px;
 `;
 
-const Post = ({user, location, files, likeCount, caption, comments}) => {
+const Post = (props) => {
+  const {
+    id,
+    user,
+    location,
+    files,
+    likeCount: likeCountProp,
+    caption,
+    comments = [],
+    isLiked: isLikedProp,
+  } = props;
+
+  const [isLiked, setIsLiked] = useState(isLikedProp);
+  const [likeCount, setLikeCount] = useState(likeCountProp);
+  const [toggleLike] = useMutation(TOGGLE_LIKE, {
+    variables: {
+      postId: id,
+    },
+  });
+
+  const handleLike = async () => {
+    if (isLiked === true) {
+      setLikeCount((l) => l - 1);
+    } else {
+      setLikeCount((l) => l + 1);
+    }
+    setIsLiked((p) => !p);
+    try {
+      await toggleLike();
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   return (
     <Container>
       <Header>
         <Touchable>
-          <Image style={{height: 40, width: 40, borderRadius: 20}} source={{uri: user.avatar}} />
+          <Image
+            style={{ height: 40, width: 40, borderRadius: 20 }}
+            source={{ uri: user.avatar }}
+          />
         </Touchable>
         <Touchable>
           <HeaderUserContainer>
@@ -61,20 +104,35 @@ const Post = ({user, location, files, likeCount, caption, comments}) => {
           </HeaderUserContainer>
         </Touchable>
       </Header>
-      <Swiper dotColor="white" style={{height: constants.height / 2.5}}>
+
+      <Swiper dotColor="#fff" style={{ height: constants.height / 2.5 }}>
         {files.map((file) => (
           <Image
-            style={{width: constants.width, height: constants.height / 2.5}}
+            style={{ width: constants.width, height: constants.height / 2.5 }}
             key={file.id}
-            source={{uri: file.url}}
+            source={{ uri: file.url }}
           />
         ))}
       </Swiper>
+
       <InfoContainer>
         <IconsContainer>
-          <Touchable>
+          <Touchable onPress={handleLike}>
             <IconContainer>
-              <Ionicons size={24} name={Platform.OS === 'ios' ? 'ios-heart' : 'md-heart-empty'} />
+              <Ionicons
+                size={24}
+                color={isLiked ? styles.redColor : styles.blackColor}
+                name={
+                  // eslint-disable-next-line no-nested-ternary
+                  Platform.OS === 'ios'
+                    ? isLiked
+                      ? 'ios-heart'
+                      : 'ios-heart-empty'
+                    : isLiked
+                    ? 'md-heart'
+                    : 'md-heart-empty'
+                }
+              />
             </IconContainer>
           </Touchable>
           <Touchable>
@@ -116,7 +174,7 @@ Post.propTypes = {
     PropTypes.shape({
       id: PropTypes.string.isRequired,
       url: PropTypes.string.isRequired,
-    }),
+    })
   ).isRequired,
   likeCount: PropTypes.number.isRequired,
   isLiked: PropTypes.bool.isRequired,
@@ -128,7 +186,7 @@ Post.propTypes = {
         id: PropTypes.string.isRequired,
         username: PropTypes.string.isRequired,
       }).isRequired,
-    }),
+    })
   ).isRequired,
   caption: PropTypes.string.isRequired,
   location: PropTypes.string,

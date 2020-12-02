@@ -1,8 +1,9 @@
-import React, {useState} from 'react';
-import {ScrollView, RefreshControl, Text} from 'react-native';
-import {useQuery, gql} from '@apollo/client';
+import React, { useState } from 'react';
+import { ScrollView, RefreshControl, Text } from 'react-native';
+import { useQuery, gql } from '@apollo/client';
 import Loader from '../../components/Loader';
 import Post from '../../components/Post';
+import CheckPost from '../../components/CheckPost';
 
 const FEED_QUERY = gql`
   {
@@ -36,7 +37,7 @@ const FEED_QUERY = gql`
 
 const Home = () => {
   const [refreshing, setRefreshing] = useState(false);
-  const {loading, data, error, refetch} = useQuery(FEED_QUERY);
+  const { loading, data, error, refetch } = useQuery(FEED_QUERY);
   const refresh = async () => {
     try {
       setRefreshing(true);
@@ -53,13 +54,16 @@ const Home = () => {
   }
   return (
     <ScrollView
-      contentContainerStyle={{backgroundColor: 'white', flex: 1}}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={refresh} />
+      }
     >
       {loading ? (
         <Loader />
       ) : (
-        data && data.seeFeed && data.seeFeed.map((post) => <Post key={post.id} {...post} />)
+        data &&
+        data.seeFeed &&
+        data.seeFeed.map((post) => <Post key={post.id} {...post} />)
       )}
     </ScrollView>
   );
