@@ -3,7 +3,6 @@ import { ScrollView, RefreshControl, Text } from 'react-native';
 import { useQuery, gql } from '@apollo/client';
 import Loader from '../../components/Loader';
 import Post from '../../components/Post';
-import CheckPost from '../../components/CheckPost';
 
 const FEED_QUERY = gql`
   {

@@ -1,7 +1,7 @@
 import React from 'react';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {createStackNavigator} from '@react-navigation/stack';
-import {Platform} from 'react-native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
+import { Platform } from 'react-native';
 import Home from '../screens/Tabs/Home';
 import Search from '../screens/Tabs/Search';
 import Notifications from '../screens/Tabs/Notifications';
@@ -16,7 +16,9 @@ const Stack = createStackNavigator();
 
 function HomeStackScreen() {
   return (
-    <Stack.Navigator screenOptions={{headerStyle: {backgroundColor: styles.greyColor}}}>
+    <Stack.Navigator
+      screenOptions={{ headerStyle: { backgroundColor: styles.greyColor } }}
+    >
       <Stack.Screen
         name="Home"
         component={Home}
@@ -32,7 +34,9 @@ function HomeStackScreen() {
 
 function SearchStackScreen() {
   return (
-    <Stack.Navigator screenOptions={{headerStyle: {backgroundColor: styles.greyColor}}}>
+    <Stack.Navigator
+      screenOptions={{ headerStyle: { backgroundColor: styles.greyColor } }}
+    >
       <Stack.Screen name="Search" component={Search} />
     </Stack.Navigator>
   );
@@ -40,7 +44,9 @@ function SearchStackScreen() {
 
 function NotificationsStackScreen() {
   return (
-    <Stack.Navigator screenOptions={{headerStyle: {backgroundColor: styles.greyColor}}}>
+    <Stack.Navigator
+      screenOptions={{ headerStyle: { backgroundColor: styles.greyColor } }}
+    >
       <Stack.Screen name="Notifications" component={Notifications} />
     </Stack.Navigator>
   );
@@ -48,7 +54,9 @@ function NotificationsStackScreen() {
 
 function ProfileStackScreen() {
   return (
-    <Stack.Navigator screenOptions={{headerStyle: {backgroundColor: styles.greyColor}}}>
+    <Stack.Navigator
+      screenOptions={{ headerStyle: { backgroundColor: styles.greyColor } }}
+    >
       <Stack.Screen name="Profile" component={Profile} />
     </Stack.Navigator>
   );
@@ -56,13 +64,21 @@ function ProfileStackScreen() {
 
 const BottomTabNavigation = () => {
   return (
-    <Tab.Navigator tabBarOptions={{showLabel: false, style: {backgroundColor: '#fafafa'}}}>
+    <Tab.Navigator
+      tabBarOptions={{
+        showLabel: false,
+        style: { backgroundColor: '#fafafa' },
+      }}
+    >
       <Tab.Screen
         name="Home"
         component={HomeStackScreen}
         options={{
-          tabBarIcon: ({focused}) => (
-            <NavIcon focused={focused} name={Platform.OS === 'ios' ? 'ios-home' : 'md-home'} />
+          tabBarIcon: ({ focused }) => (
+            <NavIcon
+              focused={focused}
+              name={Platform.OS === 'ios' ? 'ios-home' : 'md-home'}
+            />
           ),
         }}
       />
@@ -70,8 +86,11 @@ const BottomTabNavigation = () => {
         name="Search"
         component={SearchStackScreen}
         options={{
-          tabBarIcon: ({focused}) => (
-            <NavIcon focused={focused} name={Platform.OS === 'ios' ? 'ios-search' : 'md-search'} />
+          tabBarIcon: ({ focused }) => (
+            <NavIcon
+              focused={focused}
+              name={Platform.OS === 'ios' ? 'ios-search' : 'md-search'}
+            />
           ),
         }}
       />
@@ -79,14 +98,18 @@ const BottomTabNavigation = () => {
         name="Add"
         component={Add}
         options={{
-          tabBarIcon: ({focused}) => (
+          tabBarIcon: ({ focused }) => (
             <NavIcon
               focused={focused}
-              name={Platform.OS === 'ios' ? 'ios-add-circle-outline' : 'md-add-circle-outline'}
+              name={
+                Platform.OS === 'ios'
+                  ? 'ios-add-circle-outline'
+                  : 'md-add-circle-outline'
+              }
             />
           ),
         }}
-        listeners={({navigation}) => ({
+        listeners={({ navigation }) => ({
           tabPress: (e) => {
             e.preventDefault();
             navigation.navigate('PhotoNavigation');
@@ -97,11 +120,13 @@ const BottomTabNavigation = () => {
         name="Notifications"
         component={NotificationsStackScreen}
         options={{
-          tabBarIcon: ({focused}) => (
+          tabBarIcon: ({ focused }) => (
             <NavIcon
               focused={focused}
               name={
-                Platform.OS === 'ios' ? 'ios-notifications-outline' : 'md-notifications-outline'
+                Platform.OS === 'ios'
+                  ? 'ios-notifications-outline'
+                  : 'md-notifications-outline'
               }
             />
           ),
@@ -111,8 +136,11 @@ const BottomTabNavigation = () => {
         name="Profile"
         component={ProfileStackScreen}
         options={{
-          tabBarIcon: ({focused}) => (
-            <NavIcon focused={focused} name={Platform.OS === 'ios' ? 'ios-person' : 'md-person'} />
+          tabBarIcon: ({ focused }) => (
+            <NavIcon
+              focused={focused}
+              name={Platform.OS === 'ios' ? 'ios-person' : 'md-person'}
+            />
           ),
         }}
       />
